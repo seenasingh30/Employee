@@ -12,7 +12,7 @@ class Employee {
                 if (key == "password") {
                     dataToSave[key] = await auth.hashPassword(body[key]).then(hash => hash);
                 }
-                else if(key == "email"){
+                else if (key == "email") {
                     dataToSave[key] = body[key].toLowerCase();
                 }
                 else {
@@ -39,6 +39,12 @@ class Employee {
                 const query = req.query || {};
                 delete query.page;
                 delete query.limit;
+                if (query.search) {
+                    query.name = {
+                        $regex: new RegExp(search.toLowerCase().replace(/\s+/g, '\\s+'), 'gi')
+                    };
+                    delete query.search;
+                }
                 const employees = await model.find(query, {}, { skip, limit });
                 const count = await model.count(query);
                 meta.count = count;
@@ -62,7 +68,7 @@ class Employee {
                 if (key == "password") {
                     dataToSave[key] = await auth.hashPassword(body[key]).then(hash => hash);
                 }
-                else if(key == "email"){
+                else if (key == "email") {
                     dataToSave[key] = body[key].toLowerCase();
                 }
                 else {
@@ -87,7 +93,7 @@ class Employee {
     async login(req, res) {
         try {
             const body = req.body;
-            if(body.email){
+            if (body.email) {
                 body.email = body.email.toLowerCase()
             }
             const employee = await model.findOne({ email: body.email });
@@ -103,7 +109,7 @@ class Employee {
                         name: employee.name
                     });
                     res.header['Authorization'] = token;
-                    response.sendSuccess(res,{token});
+                    response.sendSuccess(res, { token });
                 }
                 else {
                     response.sendError(res, "Invalid password");
@@ -113,7 +119,7 @@ class Employee {
             response.sendSystemError(res, error);
         }
     }
-    
+
 }
 
 module.exports = new Employee();
