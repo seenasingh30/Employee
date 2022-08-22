@@ -1,7 +1,7 @@
 const model = require('./model');
 const response = require('../../utils/response');
 const auth = require('../../utils/auth');
-
+//const es = require('../../utils/elasticsearch');
 
 class Employee {
     async create(req, res) {
@@ -19,6 +19,7 @@ class Employee {
                     dataToSave[key] = body[key];
                 }
             }
+            es.AddDocument("employee", )
             const employee = await model.create(dataToSave);
             response.sendSuccess(res, employee);
         } catch (error) {
